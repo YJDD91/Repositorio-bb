@@ -39,6 +39,8 @@ app.layout = html.Div([
           ]),
            dcc.Tab(label="Promedio notas x carrera ",children=[dcc.Graph(id='barras')
           ]),
+          dcc.Tab(label="Primera nota en cada carera ",children=[dcc.Graph(id='barrasdos')
+          ]),
      ], style={"fontWeight":"bold","color":"#2c3e50"})  
 ])  
 
@@ -49,6 +51,7 @@ app.layout = html.Div([
           Output("dispersion", "figure"),
           Output ("pie", "figure"),
           Output ("barras", "figure"),
+          Output ("barrasdos", "figure"),
           Input("filtro_materia", 'value')
 
 )
@@ -72,7 +75,12 @@ def actualizar(filtro_materia):
     promedios = filtro.groupby("Carrera")["Promedio"].mean().reset_index()
     barr=px.bar(promedios, x="Carrera",y="Promedio", title="Promedio de notas por carrera",
                 color="Carrera", color_discrete_sequence=px.colors.qualitative.Prism).update_layout(template="plotly_dark")
-    return histo,disper, pi, barr
+    
+    #Barras de primeras notas
+    barro=px.histogram(filtro, x="Nota1",nbins=10,title=f"Distribuccion de primera nota - {filtro_materia}",
+                         color_discrete_sequence=["#e9c6d6"]).update_layout(template="plotly_white",yaxis_title="Cantidad de estudiantes", xaxis_title="Primera nota obtenida")
+
+    return histo, disper, pi, barr, barro
 
 #Ejecutar la aplicacion
 if __name__ == '__main__':
